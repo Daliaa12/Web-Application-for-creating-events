@@ -2,8 +2,11 @@ package com.example.demo.controllers;
 
 import com.example.demo.data.EventData;
 import com.example.demo.models.Event;
+import jakarta.validation.Valid;
+import org.springframework.boot.Banner;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -22,13 +25,19 @@ public class EventController {
     @GetMapping("create")
     public String renderCreateEventForm(Model model) {
         model.addAttribute("title","Create Events");
+        model.addAttribute(new Event());
         return "events/create";
     }
     //lives at /events/create
     @PostMapping("create")
-    public String createEvent(@ModelAttribute Event newEvent) {
+    public String createEvent(@ModelAttribute @Valid Event newEvent, Errors errors, Model model) {
+        if (errors.hasErrors()) {
+            model.addAttribute("title","Create Event");
+            return "events/create";
+        }
         EventData.add(newEvent);
         return "redirect:";
+
     }
     @GetMapping("delete")
     public String displayDeletEventForm(Model model) {
